@@ -23,7 +23,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'https://local-stores.onrender.com',
+    'https://local-storess.onrender.com',
 ]
 
 
