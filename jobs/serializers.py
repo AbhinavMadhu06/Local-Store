@@ -10,6 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
     latitude = serializers.FloatField(write_only=True, required=False, allow_null=True)
     longitude = serializers.FloatField(write_only=True, required=False, allow_null=True)
     logo = serializers.ImageField(write_only=True, required=False, allow_null=True)
+    profile_photo = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -22,6 +23,14 @@ class UserSerializer(serializers.ModelSerializer):
         except DjangoValidationError as exc:
             raise serializers.ValidationError(list(exc.messages))
         return value
+
+    def get_profile_photo(self, obj):
+        if obj.profile_photo:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.profile_photo.url)
+            return obj.profile_photo.url
+        return None
 
     def create(self, validated_data):
         company_name = validated_data.pop('company_name', None)
@@ -51,10 +60,19 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ShopProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    logo = serializers.SerializerMethodField()
 
     class Meta:
         model = ShopProfile
         fields = ('id', 'user', 'company_name', 'description', 'location', 'latitude', 'longitude', 'logo', 'is_verified', 'created_at')
+
+    def get_logo(self, obj):
+        if obj.logo:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.logo.url)
+            return obj.logo.url
+        return None
 
 class VacancyCommentSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
@@ -73,6 +91,7 @@ class VacancyCommentSerializer(serializers.ModelSerializer):
 class JobVacancySerializer(serializers.ModelSerializer):
     shop = ShopProfileSerializer(read_only=True)
     comments = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = JobVacancy
@@ -82,6 +101,14 @@ class JobVacancySerializer(serializers.ModelSerializer):
             'is_active', 'created_at', 'comments'
         )
         
+    def get_image(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
+
     def get_comments(self, obj):
         # Only serialize top-level comments
         top_level_comments = obj.comments.filter(parent__isnull=True)
