@@ -91,7 +91,6 @@ class VacancyCommentSerializer(serializers.ModelSerializer):
 class JobVacancySerializer(serializers.ModelSerializer):
     shop = ShopProfileSerializer(read_only=True)
     comments = serializers.SerializerMethodField()
-    image = serializers.SerializerMethodField()
 
     class Meta:
         model = JobVacancy
@@ -100,14 +99,6 @@ class JobVacancySerializer(serializers.ModelSerializer):
             'experience_required', 'education_required', 'salary_range', 'image',
             'is_active', 'created_at', 'comments'
         )
-        
-    def get_image(self, obj):
-        if obj.image:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.image.url)
-            return obj.image.url
-        return None
 
     def get_comments(self, obj):
         # Only serialize top-level comments
