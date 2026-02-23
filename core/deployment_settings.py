@@ -31,6 +31,9 @@ STORAGES = {
     'default': {
         'BACKEND': 'django.core.files.storage.FileSystemStorage',
     },
+    'raw_media': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
     'staticfiles': {
         'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     },
@@ -44,8 +47,16 @@ DATABASES = {
     )
 }
 
+import cloudinary
 if 'CLOUDINARY_URL' in os.environ:
     INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
     STORAGES['default'] = {
         'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
     }
+    STORAGES['raw_media'] = {
+        'BACKEND': 'cloudinary_storage.storage.RawMediaCloudinaryStorage',
+    }
+    # Initialize cloudinary configuration from the URL
+    cloudinary.config(
+        secure=True
+    )

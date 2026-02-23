@@ -49,6 +49,11 @@ class JobVacancy(models.Model):
     def __str__(self):
         return f"{self.title} at {self.shop.company_name}"
 
+from django.core.files.storage import storages
+
+def select_raw_storage():
+    return storages['raw_media']
+
 class JobApplication(models.Model):
     STATUS_CHOICES = (
         ('PENDING', 'Pending'),
@@ -60,7 +65,7 @@ class JobApplication(models.Model):
     applicant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applications')
     meets_requirements = models.BooleanField(default=False)
     contact_number = models.CharField(max_length=20, blank=True, null=True)
-    cv = models.FileField(upload_to='cvs/', blank=True, null=True)
+    cv = models.FileField(upload_to='cvs/', blank=True, null=True, storage=select_raw_storage)
     notes = models.TextField(blank=True, null=True)
     owner_note = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
