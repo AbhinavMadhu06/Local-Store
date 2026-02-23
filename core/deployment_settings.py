@@ -43,3 +43,9 @@ DATABASES = {
         ssl_require=True
     )
 }
+
+if 'CLOUDINARY_URL' in os.environ:
+    INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
+    STORAGES['default'] = {
+        'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
+    }
