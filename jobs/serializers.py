@@ -26,9 +26,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_profile_photo(self, obj):
         if obj.profile_photo:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.profile_photo.url)
             return obj.profile_photo.url
         return None
 
@@ -68,9 +65,6 @@ class ShopProfileSerializer(serializers.ModelSerializer):
 
     def get_logo(self, obj):
         if obj.logo:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.logo.url)
             return obj.logo.url
         return None
 
