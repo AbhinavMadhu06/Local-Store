@@ -148,6 +148,9 @@ class JobVacancyViewSet(viewsets.ModelViewSet):
         job = self.get_object()
         user = request.user
         
+        if not user.is_authenticated:
+            return Response({'detail': 'You must be logged in to apply.'}, status=status.HTTP_401_UNAUTHORIZED)
+            
         if user.role != 'JOB_SEEKER':
             return Response({'detail': 'Only job seekers can apply.'}, status=status.HTTP_403_FORBIDDEN)
             
